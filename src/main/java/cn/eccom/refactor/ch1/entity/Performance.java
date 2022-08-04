@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author 张伟
+ * @author yuguang
  * @version 1.0.0
  * @ClassName Performance.java
  * @Description TODO
