@@ -4,6 +4,7 @@ import cn.eccom.refactor.ch1.entity.*;
 import cn.eccom.refactor.ch1.util.CalculateFactory;
 import cn.eccom.refactor.ch1.util.R;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,8 +20,10 @@ import static cn.eccom.refactor.ch1.util.PlayTypeConstant.*;
  * @Description TODO
  * @createTime 2022年08月01日 21:39:00
  */
-
+@Component
 public class Prototype {
+    @Autowired
+    private CalculateFactory calculateFactory;
     //构造数据
     static Map<String, Play> plays = new HashMap<>();
     static List<Invoice> invoices = new ArrayList<>();
@@ -39,7 +42,7 @@ public class Prototype {
         //顾客多订一个表演
         Performance threeKingdoms = new Performance("threeKingdoms", 60);
 
-        performances.add(hamlet); performances.add(othello); performances.add(asLike);
+        performances.add(hamlet); performances.add(othello); performances.add(asLike); performances.add(threeKingdoms);
         Invoice invoice = new Invoice();
         invoice.setCustomer("BigCo");
         invoice.setPerformances(performances);
@@ -47,7 +50,7 @@ public class Prototype {
     }
 
 
-    public static String statement(R data){
+    public String statement(R data){
         String result = "Statement for" + data.getCustomer() + "\n";
         for(Performance perf : data.getPerformances()){
             result += "" + plays.get(perf.getPlayId()).getName() + calculateFactory.getCalculate(plays.get(perf.getPlayId()).getType()).calAmount(perf) / 100 + "￥(" + perf.getAudience() + " seats)\n";
@@ -58,7 +61,7 @@ public class Prototype {
     }
 
 
-    private static String htmlStatement(R data) {
+    public String htmlStatement(R data) {
         String result = "<h1>Statement for " + data.getCustomer() + "</h1>\n";
         result += "<table>\n";
         result += "<tr><th>play</th><th>seats</th><th>cost</th></tr>\n";
@@ -72,7 +75,7 @@ public class Prototype {
         return result;
     }
 
-    private static R createStatementData() {
+    public R createStatementData() {
         R result = new R();
         result.setTotalAmount(getTotalAmount());
         result.setVolumeCredit(getTotalVolumeCredits());
@@ -81,10 +84,9 @@ public class Prototype {
         return result;
     }
 
-    @Autowired
-    private static CalculateFactory calculateFactory;
 
-    private static int getTotalAmount() {
+
+    private int getTotalAmount() {
         int result = 0;
         for(Performance perf : invoices.get(0).getPerformances()){
             //plays.get(perf.getPlayId()).getType()可以获取到剧目类型
@@ -94,7 +96,7 @@ public class Prototype {
         return result;
     }
 
-    private static int getTotalVolumeCredits() {
+    private int getTotalVolumeCredits() {
         int result = 0;
         for(Performance perf : invoices.get(0).getPerformances()){
             result += calculateFactory.getCalculate(plays.get(perf.getPlayId()).getType()).calCredits(perf);
@@ -102,14 +104,4 @@ public class Prototype {
         return result;
     }
 
-
-    public static void main(String[] args) {
-        R data = createStatementData();
-        System.out.println(statement(data));
-        System.out.println(htmlStatement(data));
-    }
-
 }
-
-
-
